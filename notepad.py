@@ -41,6 +41,14 @@ def display_notes(sort_by):
     for row in cursor.fetchall():
         easygui.msgbox(f"ID: {row[0]}\nTitle: {row[3]}\nBody: {row[4]}\nCreate Date: {row[1]}\nLast Edit Date: {row[2]}")
 
+def display_all_notes():
+    cursor = conn.execute("SELECT id, create_date, title, last_edit_date FROM notes")
+    all_notes = cursor.fetchall()
+    notes_info = "All Notes:\n"
+    for note in all_notes:
+        notes_info += f"ID: {note[0]}\nДата записи: {note[1]}\nЗаголовок: {note[2]}\nДата редактирования: {note[3]}\n\n"
+    easygui.textbox(msg=notes_info, title="All Notes", codebox=1)
+
 # Функция для редактирования заметки
 def edit_note():
     note_id = easygui.enterbox("Введите ID заметки для редактирования:")
@@ -78,7 +86,8 @@ def export_notes_to_csv(file_name):
 
 # Основной цикл программы
 while True:
-    choices = ["Create Note", "Display Notes (ID)", "Display Notes (Date)", "Edit Note", "Delete Note", "Export to JSON", "Export to CSV", "Exit"]
+    choices = ["Create Note", "Display Notes (ID)", "Display Notes (Date)", "Display All Notes", 
+               "Edit Note", "Delete Note", "Export to JSON", "Export to CSV", "Exit"]
     choice = easygui.buttonbox("Select an action:", choices=choices)
 
     if choice == "Create Note":
@@ -88,6 +97,8 @@ while True:
         display_notes("id")
     elif choice == "Display Notes (Date)":
         display_notes("create_date")
+    elif choice == "Display All Notes":
+        display_all_notes()
     elif choice == "Edit Note":
         edit_note()
     elif choice == "Delete Note":
@@ -99,6 +110,6 @@ while True:
         file_name = easygui.filesavebox("Export to CSV. Choose a file:")
         export_notes_to_csv(file_name)
     elif choice == "Exit":
+        conn.commit()
         conn
         break
-        
